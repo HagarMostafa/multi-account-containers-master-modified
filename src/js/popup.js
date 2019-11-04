@@ -601,7 +601,7 @@ Logic.registerPanel(P_CONTAINERS_LIST, {
     const assignmentCheckboxElement = document.getElementById("container-page-assigned");
     const currentTabUserContextId = Logic.userContextId(currentTab.cookieStoreId);
 
-    // add this line 
+    // added this line 
     const tooltiptext = document.getElementById("tooltiptext");
     
     assignmentCheckboxElement.addEventListener("change", () => {
@@ -616,7 +616,7 @@ Logic.registerPanel(P_CONTAINERS_LIST, {
       const currentPage = document.getElementById("current-page");
       currentPage.innerHTML = escaped`<span class="page-title truncate-text">${currentTab.title}</span>`;
 
-      // add this line
+      // added this line
       tooltiptext.innerHTML = escaped`<span class="page-title truncate-tex" style="font-size:15px">${currentTab.title}</span>`;
       
       const favIconElement = Utils.createFavIconElement(currentTab.favIconUrl || "");
@@ -899,6 +899,41 @@ Logic.registerPanel(P_CONTAINERS_EDIT, {
       tr.querySelector(".edit-container").setAttribute("title", `Edit ${identity.name} container`);
       tr.querySelector(".remove-container").setAttribute("title", `Remove ${identity.name} container`);
 
+      // strange behaivior here
+      document.addEventListener("keydown", (e) => {
+      const selectables = [...document.querySelectorAll("[tabindex='0'], [tabindex='-1']")];
+      const element = document.activeElement;
+      const index = selectables.indexOf(element) || 0;
+      function next() {
+        const nextElement = selectables[index + 1];
+        if (nextElement) {
+          nextElement.focus();
+        }
+      }
+      function previous() {
+        const previousElement = selectables[index - 1];
+        if (previousElement) {
+          previousElement.focus();
+        }
+      }
+      switch (e.keyCode) {
+      case 40:
+        next();
+        break;
+      case 38:
+        previous();
+        break;
+      default:
+        if ((e.keyCode >= 49 && e.keyCode <= 57) &&
+            Logic._currentPanel === "containersEdit") {
+          const element = selectables[e.keyCode - 48];
+          if (element) {
+            element.click();
+          }
+        }
+        break;
+      }
+    });
 
       Logic.addEnterHandler(tr, e => {
         if (e.target.matches(".edit-container-icon") || e.target.parentNode.matches(".edit-container-icon")) {
